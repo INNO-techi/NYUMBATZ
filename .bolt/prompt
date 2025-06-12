@@ -1,0 +1,535 @@
+# House Rental Web Application - Product Requirements Document (PRD)
+
+## 1. Project Overview
+
+### 1.1 Product Vision
+A comprehensive web-based platform that connects property owners with potential tenants, enabling efficient house listings, viewing requests, and rental transactions with integrated payment processing and commission management.
+
+### 1.2 Target Market
+- **Primary**: Property rental market in Tanzania
+- **Secondary**: Real estate agents and property management companies
+- **Geographic Focus**: Urban areas (Dar es Salaam, Mwanza, Arusha, Mbeya)
+
+### 1.3 Business Model
+- Commission-based revenue (15% on successful rentals)
+- Freemium model for property listings
+- Premium features for enhanced visibility
+
+## 2. Technical Architecture
+
+### 2.1 Web Application Stack
+**Frontend Technologies:**
+- **Framework**: React.js or Vue.js for dynamic user interface
+- **UI Library**: Material-UI or Bootstrap for consistent design
+- **State Management**: Redux or Vuex for application state
+- **Responsive Design**: Mobile-first approach using CSS Grid/Flexbox
+
+**Backend Technologies:**
+- **Server**: Node.js with Express.js or Python with Django/Flask
+- **Database**: PostgreSQL for main data, Redis for caching
+- **API**: RESTful API architecture with JSON responses
+- **Authentication**: JWT (JSON Web Tokens) for secure sessions
+
+**Infrastructure:**
+- **Hosting**: AWS/Digital Ocean/Heroku for scalability
+- **CDN**: Cloudflare for image and static content delivery
+- **Payment Gateway**: M-Pesa API, Tigo Pesa, Airtel Money integration
+- **File Storage**: AWS S3 or Cloudinary for image management
+
+### 2.2 Database Design
+
+```sql
+-- Core Tables Structure
+
+Users Table:
+- user_id (Primary Key)
+- full_name
+- email
+- phone_number
+- password_hash
+- user_role (admin, tenant, owner)
+- registration_date
+- is_verified
+- profile_image
+
+Houses Table:
+- house_id (Primary Key)
+- owner_id (Foreign Key)
+- title
+- description
+- price_monthly
+- location_address
+- latitude
+- longitude
+- bedrooms
+- bathrooms
+- house_type
+- amenities (JSON)
+- images (JSON array)
+- status (available, rented, maintenance)
+- created_date
+- updated_date
+
+Viewing_Requests Table:
+- request_id (Primary Key)
+- house_id (Foreign Key)
+- tenant_id (Foreign Key)
+- requested_date
+- preferred_time
+- status (pending, approved, rejected, completed)
+- admin_notes
+- created_at
+
+Payments Table:
+- payment_id (Primary Key)
+- house_id (Foreign Key)
+- tenant_id (Foreign Key)
+- amount_total
+- commission_amount
+- owner_amount
+- payment_method
+- transaction_reference
+- status (pending, completed, failed)
+- payment_date
+
+Commission_Settings Table:
+- setting_id (Primary Key)
+- commission_rate
+- minimum_payment
+- payment_methods (JSON)
+- updated_by
+- updated_date
+```
+
+## 3. User Roles & Access Control
+
+### 3.1 System Administrator (Super Admin)
+**Dashboard Access:**
+- Platform analytics and reporting
+- User management (approve/suspend accounts)
+- Commission rate configuration
+- Payment processing oversight
+- System maintenance tools
+
+**Permissions:**
+- Full CRUD operations on all data
+- Financial reporting access
+- System configuration management
+
+### 3.2 Property Admin (Wewe)
+**Dashboard Features:**
+- Property listing management
+- Viewing request processing
+- Tenant communication portal
+- Payment tracking and reports
+- Commission earnings overview
+
+**Workflow:**
+1. Add/edit house listings with photos and details
+2. Receive and respond to viewing requests
+3. Schedule property viewings
+4. Process rental applications
+5. Monitor payment status and commissions
+
+### 3.3 Tenant (Mpangaji)
+**User Portal Features:**
+- Property search and filtering
+- Viewing request submission
+- Payment processing interface
+- Rental history and documents
+- Profile management
+
+**User Journey:**
+1. Register and verify account
+2. Search properties using filters
+3. View detailed property information
+4. Submit viewing requests
+5. Complete rental payments
+6. Access rental agreements
+
+### 3.4 Property Owner (Mwenye Nyumba)
+**Owner Portal:**
+- Property performance analytics
+- Payment history (85% after commission)
+- Tenant information access
+- Property maintenance requests
+- Earnings reports
+
+## 4. Core Web Application Features
+
+### 4.1 Homepage & Navigation
+**Public Homepage:**
+- Hero section with search functionality
+- Featured properties carousel
+- Location-based property suggestions
+- User registration/login portal
+- About and contact information
+
+**Navigation Structure:**
+```
+Header: Logo | Search | Properties | About | Contact | Login/Register
+Main Content: Property listings with filters
+Footer: Links | Contact | Social Media | Terms
+```
+
+### 4.2 Property Search & Filtering System
+**Advanced Search Features:**
+- **Location Filter**: City, district, neighborhood dropdown
+- **Price Range**: Slider with min/max values
+- **Property Type**: House, apartment, studio options
+- **Bedrooms/Bathrooms**: Number selectors
+- **Amenities**: Checkbox options (parking, security, etc.)
+- **Availability Date**: Calendar picker
+
+**Search Results Display:**
+- Grid/list view toggle
+- Sorting options (price, date, relevance)
+- Pagination with load more functionality
+- Map view integration with property markers
+
+### 4.3 Property Details Page
+**Comprehensive Information:**
+- High-resolution image gallery with zoom functionality
+- Property specifications table
+- Interactive location map
+- Amenities and features list
+- Virtual tour integration (future feature)
+- Similar properties suggestions
+
+**Action Buttons:**
+- "Omba Kuonyeshwa" (Request Viewing) - Primary CTA
+- "Hifadhi" (Save to Favorites)
+- "Shiriki" (Share property)
+- "Ripoti Tatizo" (Report Issue)
+
+### 4.4 Viewing Request Management
+**Tenant Interface:**
+- Request form with preferred date/time
+- Calendar integration for availability
+- Request status tracking
+- Notification system for updates
+
+**Admin Interface:**
+- Request queue with priority sorting
+- Batch approval/rejection tools
+- Calendar scheduling system
+- Automated notification sending
+- Request analytics and reporting
+
+### 4.5 Payment Processing System
+**Payment Flow:**
+1. **Payment Summary Page:**
+   ```
+   House Rent: TSh 500,000
+   Service Fee (15%): TSh 75,000
+   Total Amount: TSh 575,000
+   ```
+
+2. **Payment Method Selection:**
+   - M-Pesa integration with STK Push
+   - Tigo Pesa payment processing
+   - Bank transfer options
+   - Credit/debit card processing
+
+3. **Payment Confirmation:**
+   - Real-time transaction status
+   - Receipt generation (PDF)
+   - Automatic notification to all parties
+   - Payment history logging
+
+**Commission Distribution:**
+- Automated 85/15 split calculation
+- Escrow system for secure transactions
+- Payment reconciliation tools
+- Financial reporting dashboard
+
+### 4.6 Admin Dashboard
+**Analytics Overview:**
+- Total properties listed
+- Active viewing requests
+- Monthly revenue and commissions
+- User registration trends
+- Property performance metrics
+
+**Management Tools:**
+- Property approval workflow
+- User verification system
+- Payment processing queue
+- Communication templates
+- Report generation tools
+
+## 5. User Experience (UX) Design
+
+### 5.1 Responsive Design Requirements
+**Desktop (1200px+):**
+- Multi-column property grid
+- Sidebar filters
+- Detailed property cards
+- Full-featured dashboard
+
+**Tablet (768px-1199px):**
+- Two-column property layout
+- Collapsible filter sidebar
+- Touch-optimized navigation
+- Simplified dashboard view
+
+**Mobile (320px-767px):**
+- Single-column property list
+- Bottom sheet filters
+- Mobile-optimized forms
+- Swipe-friendly galleries
+
+### 5.2 Accessibility Standards
+- WCAG 2.1 AA compliance
+- Keyboard navigation support
+- Screen reader compatibility
+- High contrast mode option
+- Multi-language support (Swahili/English)
+
+## 6. API Specifications
+
+### 6.1 Core API Endpoints
+
+**Authentication Endpoints:**
+```
+POST /api/auth/register
+POST /api/auth/login
+POST /api/auth/logout
+POST /api/auth/reset-password
+```
+
+**Property Management:**
+```
+GET /api/properties (with query parameters)
+GET /api/properties/:id
+POST /api/properties (admin only)
+PUT /api/properties/:id (admin only)
+DELETE /api/properties/:id (admin only)
+```
+
+**Viewing Requests:**
+```
+GET /api/viewing-requests
+POST /api/viewing-requests
+PUT /api/viewing-requests/:id/status
+GET /api/viewing-requests/tenant/:tenant_id
+```
+
+**Payment Processing:**
+```
+POST /api/payments/initiate
+GET /api/payments/:id/status
+POST /api/payments/callback (webhook)
+GET /api/payments/history/:user_id
+```
+
+### 6.2 Third-Party Integrations
+
+**Payment Gateways:**
+- **M-Pesa API**: STK Push and callback handling
+- **Tigo Pesa**: Direct payment integration
+- **Stripe/PayPal**: International payment support
+
+**Location Services:**
+- **Google Maps API**: Property location mapping
+- **Geocoding**: Address to coordinates conversion
+- **Places API**: Location autocomplete
+
+**Communication:**
+- **SMS Gateway**: Automated notifications
+- **Email Service**: Transactional emails
+- **Push Notifications**: Real-time updates
+
+## 7. Security & Performance
+
+### 7.1 Security Measures
+**Data Protection:**
+- SSL/TLS encryption for all communications
+- Password hashing using bcrypt
+- SQL injection prevention
+- XSS protection headers
+- CSRF token implementation
+
+**User Authentication:**
+- Multi-factor authentication option
+- Session management with JWT
+- Role-based access control (RBAC)
+- Account lockout after failed attempts
+
+**Payment Security:**
+- PCI DSS compliance considerations
+- Encrypted payment data storage
+- Secure webhook handling
+- Transaction logging and monitoring
+
+### 7.2 Performance Optimization
+**Frontend Performance:**
+- Image optimization and lazy loading
+- Code splitting and minification
+- Browser caching strategies
+- CDN implementation for static assets
+
+**Backend Performance:**
+- Database query optimization
+- API response caching
+- Load balancing considerations
+- Monitoring and alerting systems
+
+## 8. Testing Strategy
+
+### 8.1 Testing Types
+**Unit Testing:**
+- Frontend component testing
+- Backend function testing
+- Database query testing
+- API endpoint validation
+
+**Integration Testing:**
+- Payment gateway integration
+- Third-party API testing
+- Database connectivity
+- Email/SMS delivery
+
+**User Acceptance Testing:**
+- Role-based workflow testing
+- Cross-browser compatibility
+- Mobile responsiveness
+- Payment flow validation
+
+### 8.2 Quality Assurance
+- Automated testing pipeline
+- Code review process
+- Performance benchmarking
+- Security vulnerability scanning
+
+## 9. Deployment & Infrastructure
+
+### 9.1 Environment Setup
+**Development Environment:**
+- Local development servers
+- Development database
+- Mock payment gateway
+- Testing email service
+
+**Staging Environment:**
+- Production-like environment
+- Integration testing platform
+- User acceptance testing
+- Performance testing
+
+**Production Environment:**
+- High-availability setup
+- Load balancers
+- Database backups
+- Monitoring systems
+
+### 9.2 DevOps Pipeline
+- Version control with Git
+- Continuous Integration/Continuous Deployment (CI/CD)
+- Automated testing on commits
+- Staged deployment process
+
+## 10. Launch Strategy
+
+### 10.1 MVP (Minimum Viable Product) Features
+**Phase 1 - Core Functionality:**
+- User registration and authentication
+- Basic property listing and search
+- Viewing request system
+- Simple payment processing
+- Admin dashboard basics
+
+**Timeline: 3-4 months**
+
+### 10.2 Post-MVP Enhancements
+**Phase 2 - Enhanced Features:**
+- Advanced search filters
+- Mobile app development
+- Enhanced analytics
+- Multi-language support
+- Virtual tours
+
+**Timeline: 2-3 months after MVP**
+
+### 10.3 Success Metrics
+**Technical KPIs:**
+- Page load time < 3 seconds
+- 99.9% uptime availability
+- Payment success rate > 95%
+- API response time < 500ms
+
+**Business KPIs:**
+- 500+ registered users in first 3 months
+- 100+ property listings
+- 50+ successful rental transactions
+- 15% commission revenue target achievement
+
+## 11. Budget & Resource Planning
+
+### 11.1 Development Team Structure
+**Core Team:**
+- Full-Stack Developer (Lead)
+- Frontend Developer
+- Backend Developer
+- UI/UX Designer
+- Quality Assurance Tester
+- DevOps Engineer (part-time)
+- Project Manager
+
+### 11.2 Technology Costs
+**Monthly Recurring Costs:**
+- Cloud hosting: $100-300/month
+- Database services: $50-150/month
+- CDN and storage: $20-50/month
+- Payment gateway fees: 2-3% per transaction
+- Third-party API costs: $50-100/month
+
+### 11.3 Development Timeline
+**Total Project Duration: 6-8 months**
+- Planning and Design: 4-6 weeks
+- MVP Development: 12-16 weeks
+- Testing and QA: 3-4 weeks
+- Deployment and Launch: 2-3 weeks
+- Post-launch optimization: Ongoing
+
+## 12. Risk Management
+
+### 12.1 Technical Risks
+- Payment gateway integration challenges
+- Database scalability issues
+- Third-party API limitations
+- Security vulnerabilities
+
+**Mitigation Strategies:**
+- Thorough testing phases
+- Scalable architecture design
+- Regular security audits
+- Backup and recovery plans
+
+### 12.2 Business Risks
+- Low user adoption
+- Competition from established platforms
+- Regulatory compliance changes
+- Economic factors affecting rental market
+
+**Mitigation Strategies:**
+- Market research and validation
+- Competitive analysis
+- Legal compliance review
+- Flexible business model adaptation
+
+## 13. Maintenance & Support
+
+### 13.1 Ongoing Maintenance
+- Regular security updates
+- Performance monitoring
+- Database optimization
+- Feature updates based on user feedback
+
+### 13.2 Support Structure
+- User help documentation
+- Customer support system
+- Technical support team
+- Community forums
+
+This comprehensive PRD provides a complete roadmap for developing a professional house rental web application with all necessary technical specifications, user requirements, and implementation guidelines.
